@@ -94,18 +94,15 @@ public class DatabaseView extends JFrame {
     private void initializeReportsMenu() {
         reportsMenuPanel = new JPanel(new BorderLayout());
 
-        // Panel title
         JLabel titleLabel = new JLabel("Generate Reports", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         reportsMenuPanel.add(titleLabel, BorderLayout.NORTH);
 
-        // Center panel for input fields and report options
         JPanel centerPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Input fields for Month and Year
         JLabel monthLabel = new JLabel("Month:");
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -129,7 +126,6 @@ public class DatabaseView extends JFrame {
         gbc.gridy = 1;
         centerPanel.add(yearField, gbc);
 
-        // Report buttons
         JButton gamePerformanceButton = new JButton("Generate Game Performance Report");
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -150,9 +146,8 @@ public class DatabaseView extends JFrame {
 
         reportsMenuPanel.add(centerPanel, BorderLayout.CENTER);
 
-        // Back button
         JButton backButton = new JButton("Back to Main Menu");
-        backButton.setPreferredSize(new Dimension(50, 30)); // Width: 200, Height: 50
+        backButton.setPreferredSize(new Dimension(50, 30));
         backButton.addActionListener(e -> showCard("MainMenu"));
         reportsMenuPanel.add(backButton, BorderLayout.SOUTH);
     }
