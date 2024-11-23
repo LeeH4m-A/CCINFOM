@@ -77,34 +77,46 @@ public class DatabaseView extends JFrame {
     private void initializeRecordsMenu() {
         recordsMenuPanel = new JPanel(new BorderLayout());
         JLabel label = new JLabel("Select a Record Type to Manage", SwingConstants.CENTER);
-
+    
         JButton backButton = new JButton("Back to Main Menu");
         backButton.addActionListener(e -> showCard("MainMenu"));
-
-        recordsMenuPanel.add(label, BorderLayout.CENTER);
+    
+        recordsMenuPanel.add(label, BorderLayout.NORTH);
         recordsMenuPanel.add(backButton, BorderLayout.SOUTH);
-
+    
         // Add buttons to select record types
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(3, 1, 10, 10));
-
+    
         JButton customerButton = new JButton("Manage Customer Records");
-        customerButton.addActionListener(e -> showCard("CustomerRecordsMenu"));  // <-- Switch to customer records menu
+        customerButton.addActionListener(e -> showCard("CustomerRecordsMenu"));  
         buttonPanel.add(customerButton);
-
-        // Add more buttons for other records here (e.g., employee records, etc.)
+    
         // Branch Control button
-
         branchControl branches = new branchControl();
-        JPanel branchPanel = branches.getPanel();  // Get the branch control JPanel
-        cardsPanel.add(branchPanel, "BranchControl");  // Add it to the cardsPanel
+        JPanel branchPanel = branches.getPanel();
+
+        // Create a wrapper panel to hold both the existing branchControl content and the back button
+        JPanel wrapperPanel = new JPanel(new BorderLayout());
+
+        // Add the branchPanel content to the CENTER region of the wrapper
+        wrapperPanel.add(branchPanel, BorderLayout.CENTER);
+
+        // Add the back button in the SOUTH region
+        JButton backButton2 = new JButton("Back to Records Menu");
+        backButton2.addActionListener(e -> showCard("RecordsMenu"));
+        wrapperPanel.add(backButton2, BorderLayout.SOUTH);
+
+        // Add wrapperPanel as a card
+        cardsPanel.add(wrapperPanel, "BranchControl");
     
         JButton branchControlButton = new JButton("Manage Branch Records");
-        branchControlButton.addActionListener(e -> showCard("BranchControl")); // Switch to the branch control panel when clicked
+        branchControlButton.addActionListener(e -> showCard("BranchControl"));
         buttonPanel.add(branchControlButton);
-
+    
         recordsMenuPanel.add(buttonPanel, BorderLayout.CENTER);
     }
+    
 
     // customer records menu (this will show the CustomerManagerPanel)
     private void initializeCustomerRecordsMenu() {
