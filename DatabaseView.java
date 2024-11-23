@@ -2,8 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-import your.package.name.CustomerManagerPanel;  // <-- Added import for CustomerManagerPanel
-
 public class DatabaseView extends JFrame {
     private JPanel cardsPanel;
     private CardLayout cardLayout;
@@ -111,6 +109,16 @@ public class DatabaseView extends JFrame {
         JButton backButton = new JButton("Back to Records Menu");
         backButton.addActionListener(e -> showCard("RecordsMenu"));
         customerRecordsMenuPanel.add(backButton, BorderLayout.SOUTH);
+    }
+
+    private void initializeTransactionsMenu() {
+        transactionsMenuPanel = new JPanel(new BorderLayout());
+        JLabel label = new JLabel("Transactions Menu", SwingConstants.CENTER);
+        JButton backButton = new JButton("Back to Main Menu");
+        transactionsMenuPanel.add(label, BorderLayout.CENTER);
+        transactionsMenuPanel.add(backButton, BorderLayout.SOUTH);
+
+        backButton.addActionListener(e -> showCard("MainMenu"));
     }
 
     private void initializeReportsMenu() {
