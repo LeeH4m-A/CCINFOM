@@ -1,6 +1,6 @@
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import javax.swing.*;
 
 public class DatabaseView extends JFrame {
     private JPanel cardsPanel;
@@ -93,6 +93,15 @@ public class DatabaseView extends JFrame {
         buttonPanel.add(customerButton);
 
         // Add more buttons for other records here (e.g., employee records, etc.)
+        // Branch Control button
+
+        branchControl branches = new branchControl();
+        JPanel branchPanel = branches.getPanel();  // Get the branch control JPanel
+        cardsPanel.add(branchPanel, "BranchControl");  // Add it to the cardsPanel
+    
+        JButton branchControlButton = new JButton("Manage Branch Records");
+        branchControlButton.addActionListener(e -> showCard("BranchControl")); // Switch to the branch control panel when clicked
+        buttonPanel.add(branchControlButton);
 
         recordsMenuPanel.add(buttonPanel, BorderLayout.CENTER);
     }
@@ -193,5 +202,20 @@ public class DatabaseView extends JFrame {
 
     public void showCard(String cardName) {
         cardLayout.show(cardsPanel, cardName);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            DatabaseView databaseView = new DatabaseView();
+            databaseView.setVisible(true);
+
+            // Add listeners for the main menu buttons
+            databaseView.addMainMenuListeners(
+                e -> databaseView.showCard("RecordsMenu"),
+                e -> databaseView.showCard("TransactionsMenu"),
+                e -> databaseView.showCard("ReportsMenu"),
+                e -> System.exit(0) // Exit application
+            );
+        });
     }
 }
