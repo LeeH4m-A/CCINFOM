@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+import your.package.name.CustomerManagerPanel;  // <-- Added import for CustomerManagerPanel
+
 public class DatabaseView extends JFrame {
     private JPanel cardsPanel;
     private CardLayout cardLayout;
@@ -11,6 +13,7 @@ public class DatabaseView extends JFrame {
     private JPanel recordsMenuPanel;
     private JPanel transactionsMenuPanel;
     private JPanel reportsMenuPanel;
+    private JPanel customerRecordsMenuPanel;  // <-- Added this panel for customer records
 
     // main menu buttons
     private JButton recordsButton;
@@ -31,11 +34,14 @@ public class DatabaseView extends JFrame {
         initializeRecordsMenu();
         initializeTransactionsMenu();
         initializeReportsMenu();
+        initializeCustomerRecordsMenu();  // <-- Added this method to initialize the customer records menu
+
 
         cardsPanel.add(mainMenuPanel, "MainMenu");
         cardsPanel.add(recordsMenuPanel, "RecordsMenu");
         cardsPanel.add(transactionsMenuPanel, "TransactionsMenu");
         cardsPanel.add(reportsMenuPanel, "ReportsMenu");
+        cardsPanel.add(customerRecordsMenuPanel, "CustomerRecordsMenu");  // <-- Added customer records menu
 
         add(cardsPanel);
 
@@ -72,24 +78,40 @@ public class DatabaseView extends JFrame {
     // records menu
     private void initializeRecordsMenu() {
         recordsMenuPanel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("Records Menu", SwingConstants.CENTER);
+        JLabel label = new JLabel("Select a Record Type to Manage", SwingConstants.CENTER);
+
         JButton backButton = new JButton("Back to Main Menu");
+        backButton.addActionListener(e -> showCard("MainMenu"));
+
         recordsMenuPanel.add(label, BorderLayout.CENTER);
         recordsMenuPanel.add(backButton, BorderLayout.SOUTH);
 
-        backButton.addActionListener(e -> showCard("MainMenu"));
+        // Add buttons to select record types
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(3, 1, 10, 10));
+
+        JButton customerButton = new JButton("Manage Customer Records");
+        customerButton.addActionListener(e -> showCard("CustomerRecordsMenu"));  // <-- Switch to customer records menu
+        buttonPanel.add(customerButton);
+
+        // Add more buttons for other records here (e.g., employee records, etc.)
+
+        recordsMenuPanel.add(buttonPanel, BorderLayout.CENTER);
     }
 
-    private void initializeTransactionsMenu() {
-        transactionsMenuPanel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("Transactions Menu", SwingConstants.CENTER);
-        JButton backButton = new JButton("Back to Main Menu");
-        transactionsMenuPanel.add(label, BorderLayout.CENTER);
-        transactionsMenuPanel.add(backButton, BorderLayout.SOUTH);
+    // customer records menu (this will show the CustomerManagerPanel)
+    private void initializeCustomerRecordsMenu() {
+        customerRecordsMenuPanel = new JPanel(new BorderLayout());
 
-        backButton.addActionListener(e -> showCard("MainMenu"));
+        // Add CustomerManagerPanel to the customer records menu
+        CustomerManagerPanel customerManagerPanel = new CustomerManagerPanel();  // <-- Added the CustomerManagerPanel here
+        customerRecordsMenuPanel.add(customerManagerPanel, BorderLayout.CENTER);
+
+        // Add back button to return to records menu
+        JButton backButton = new JButton("Back to Records Menu");
+        backButton.addActionListener(e -> showCard("RecordsMenu"));
+        customerRecordsMenuPanel.add(backButton, BorderLayout.SOUTH);
     }
-
 
     private void initializeReportsMenu() {
         reportsMenuPanel = new JPanel(new BorderLayout());
