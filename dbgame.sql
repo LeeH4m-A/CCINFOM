@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: dbgame
+-- Host: 127.0.0.1    Database: test9
 -- ------------------------------------------------------
 -- Server version	8.4.0
 
@@ -129,14 +129,14 @@ DROP TABLE IF EXISTS `products`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `products` (
   `product_id` int NOT NULL,
-  `game_id` int NOT NULL,
+  `game_id` int DEFAULT NULL,
   `console` varchar(25) DEFAULT NULL,
   `price` float DEFAULT NULL,
   PRIMARY KEY (`product_id`),
   KEY `game_id` (`game_id`),
   KEY `console` (`console`),
-  CONSTRAINT `products_ibfk_1` FOREIGN KEY (`game_id`) REFERENCES `games` (`game_id`),
-  CONSTRAINT `products_ibfk_2` FOREIGN KEY (`console`) REFERENCES `consoles` (`console_name`)
+  CONSTRAINT `products_ibfk_1` FOREIGN KEY (`game_id`) REFERENCES `games` (`game_id`) ON DELETE SET NULL,
+  CONSTRAINT `products_ibfk_2` FOREIGN KEY (`console`) REFERENCES `consoles` (`console_name`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -159,15 +159,15 @@ DROP TABLE IF EXISTS `receipts`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `receipts` (
   `receipt_id` int NOT NULL,
-  `customer_id` int NOT NULL,
-  `product_id_purchased` int NOT NULL,
+  `customer_id` int DEFAULT NULL,
+  `product_id_purchased` int DEFAULT NULL,
   `date_of_purchase` date DEFAULT NULL,
-  `branch_id` int NOT NULL,
+  `branch_id` int DEFAULT NULL,
   PRIMARY KEY (`receipt_id`),
   KEY `product_id_purchased` (`product_id_purchased`),
   KEY `branch_id` (`branch_id`),
-  CONSTRAINT `receipts_ibfk_1` FOREIGN KEY (`product_id_purchased`) REFERENCES `products` (`product_id`),
-  CONSTRAINT `receipts_ibfk_2` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`branch_id`)
+  CONSTRAINT `receipts_ibfk_1` FOREIGN KEY (`product_id_purchased`) REFERENCES `products` (`product_id`) ON DELETE SET NULL,
+  CONSTRAINT `receipts_ibfk_2` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`branch_id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -192,7 +192,7 @@ CREATE TABLE `suppliers` (
   `supplier_id` int NOT NULL,
   `location` varchar(30) DEFAULT NULL,
   `product_id` int NOT NULL,
-  `quantity` int NOT NULL,
+  `quantity` int DEFAULT NULL,
   PRIMARY KEY (`supplier_id`,`product_id`),
   KEY `product_id` (`product_id`),
   CONSTRAINT `suppliers_ibfk_1` FOREIGN KEY (`supplier_id`) REFERENCES `branches` (`branch_id`),
@@ -219,4 +219,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-23 16:05:44
+-- Dump completed on 2024-11-23 19:17:51
