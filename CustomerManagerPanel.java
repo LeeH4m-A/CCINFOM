@@ -47,12 +47,13 @@ public class CustomerManagerPanel extends JPanel {
                 stmt.setString(3, firstName);
                 stmt.setInt(4, Integer.parseInt(age));
                 stmt.setString(5, address);
+
                 stmt.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Record Created Successfully!");
+                JOptionPane.showMessageDialog(this, "Record Created Successfully!");
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error creating record: " + ex.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error creating record: " + e.getMessage());
         }
     }
 
@@ -63,21 +64,23 @@ public class CustomerManagerPanel extends JPanel {
             String sql = "SELECT * FROM customers WHERE customer_id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, Integer.parseInt(customerId));
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        String customerInfo = "ID: " + rs.getInt("customer_id") + "\n" +
-                                              "Name: " + rs.getString("first_name") + " " + rs.getString("last_name") + "\n" +
-                                              "Age: " + rs.getInt("age") + "\n" +
-                                              "Address: " + rs.getString("address");
-                        JOptionPane.showMessageDialog(null, customerInfo);
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Customer not found.");
-                    }
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    String customerData = "Customer ID: " + rs.getInt("customer_id") + "\n"
+                            + "Last Name: " + rs.getString("last_name") + "\n"
+                            + "First Name: " + rs.getString("first_name") + "\n"
+                            + "Age: " + rs.getInt("age") + "\n"
+                            + "Address: " + rs.getString("address");
+
+                    JOptionPane.showMessageDialog(this, customerData);
+                } else {
+                    JOptionPane.showMessageDialog(this, "No record found with ID: " + customerId);
                 }
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error fetching record: " + ex.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error retrieving record: " + e.getMessage());
         }
     }
 
@@ -97,12 +100,17 @@ public class CustomerManagerPanel extends JPanel {
                 stmt.setInt(3, Integer.parseInt(age));
                 stmt.setString(4, address);
                 stmt.setInt(5, Integer.parseInt(customerId));
-                stmt.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Record Updated Successfully!");
+
+                int rowsUpdated = stmt.executeUpdate();
+                if (rowsUpdated > 0) {
+                    JOptionPane.showMessageDialog(this, "Record Updated Successfully!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "No record found with ID: " + customerId);
+                }
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error updating record: " + ex.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error updating record: " + e.getMessage());
         }
     }
 
@@ -113,12 +121,17 @@ public class CustomerManagerPanel extends JPanel {
             String sql = "DELETE FROM customers WHERE customer_id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, Integer.parseInt(customerId));
-                stmt.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Record Deleted Successfully!");
+
+                int rowsDeleted = stmt.executeUpdate();
+                if (rowsDeleted > 0) {
+                    JOptionPane.showMessageDialog(this, "Record Deleted Successfully!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "No record found with ID: " + customerId);
+                }
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error deleting record: " + ex.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error deleting record: " + e.getMessage());
         }
     }
 }
