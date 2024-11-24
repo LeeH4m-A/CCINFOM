@@ -475,10 +475,6 @@ private DefaultTableModel fetchGamePerformance(int month, int year) {
         gbc.gridy = 5;
         centerPanel.add(consumerEngagementButton, gbc);
 
-	JButton consumerEngagementButton = new JButton("Generate Consumer Engagement Report");
-	gbc.gridy = 5;
-	centerPanel.add(consumerEngagementButton, gbc);
-
 	// Add functionality to the consumerEngagementButton
 	consumerEngagementButton.addActionListener(e -> {
   	  try {
