@@ -12,6 +12,7 @@ public class DatabaseView extends JFrame {
     private JPanel transactionsMenuPanel;
     private JPanel reportsMenuPanel;
     private JPanel customerRecordsMenuPanel;  // <-- Added this panel for customer records
+    private JPanel refundGamePanel;  // <-- Added this panel for refund game
 
     // main menu buttons
     private JButton recordsButton;
@@ -33,6 +34,7 @@ public class DatabaseView extends JFrame {
         initializeTransactionsMenu();
         initializeReportsMenu();
         initializeCustomerRecordsMenu();  // <-- Added this method to initialize the customer records menu
+        initializeRefundGamePanel();  // <-- Added this method to initialize the refund game panel
 
 
         cardsPanel.add(mainMenuPanel, "MainMenu");
@@ -40,6 +42,7 @@ public class DatabaseView extends JFrame {
         cardsPanel.add(transactionsMenuPanel, "TransactionsMenu");
         cardsPanel.add(reportsMenuPanel, "ReportsMenu");
         cardsPanel.add(customerRecordsMenuPanel, "CustomerRecordsMenu");  // <-- Added customer records menu
+        cardsPanel.add(refundGamePanel, "RefundGamePanel");  // <-- Added refund game panel
 
         add(cardsPanel);
 
@@ -122,16 +125,25 @@ public class DatabaseView extends JFrame {
     private void initializeCustomerRecordsMenu() {
         customerRecordsMenuPanel = new JPanel(new BorderLayout());
 
-        // Add CustomerManagerPanel to the customer records menu
-        CustomerManagerPanel customerManagerPanel = new CustomerManagerPanel();  // <-- Added the CustomerManagerPanel here
+        CustomerManagerPanel customerManagerPanel = new CustomerManagerPanel();
         customerRecordsMenuPanel.add(customerManagerPanel, BorderLayout.CENTER);
 
-        // Add back button to return to records menu
+        // back button to return to records menu
         JButton backButton = new JButton("Back to Records Menu");
         backButton.addActionListener(e -> showCard("RecordsMenu"));
         customerRecordsMenuPanel.add(backButton, BorderLayout.SOUTH);
     }
 
+    // refund game panel
+    private void initializeRefundGamePanel() {
+        refundGamePanel = new RefundGamePanel();
+
+        // back button to return to transactions menu
+        JButton backButton = new JButton("Back to Transactions Menu");
+        backButton.addActionListener(e -> showCard("TransactionsMenu"));
+        refundGamePanel.add(backButton, BorderLayout.SOUTH);
+    }
+    
     private void initializeTransactionsMenu() {
         transactionsMenuPanel = new JPanel(new BorderLayout());
         JLabel label = new JLabel("Transactions Menu", SwingConstants.CENTER);
@@ -140,6 +152,10 @@ public class DatabaseView extends JFrame {
         transactionsMenuPanel.add(backButton, BorderLayout.SOUTH);
 
         backButton.addActionListener(e -> showCard("MainMenu"));
+
+        JButton refundGameButton = new JButton("Video Game Refund");
+        refundGameButton.addActionListener(e -> showCard("RefundGamePanel"));
+        transactionsMenuPanel.add(refundGameButton, BorderLayout.NORTH);
     }
 
     private void initializeReportsMenu() {
