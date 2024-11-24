@@ -386,6 +386,51 @@ private DefaultTableModel fetchGamePerformance(int month, int year) {
     return tableModel;
 }
 
+private DefaultTableModel fetchConsolePerformance(int month, int year) {
+    DefaultTableModel tableModel = new DefaultTableModel();
+    tableModel.addColumn("Console Name");
+    tableModel.addColumn("Developer");
+    tableModel.addColumn("Games Sold");
+    tableModel.addColumn("Games Sales");
+
+    String query = """
+        SELECT consoles.console_name, consoles.developer, 
+        COUNT(product_id_purchased) AS games_sold,
+        ROUND(SUM(products.price), 2) AS games_sales
+        FROM consoles
+        JOIN products
+        ON consoles.console_name = products.console
+        JOIN receipts
+        ON (products.product_id = receipts.product_id_purchased)
+        WHERE YEAR(receipts.date_of_purchase) = ?
+            AND MONTH(receipts.date_of_purchase) = ?
+        GROUP BY console_name
+        ORDER BY games_sales DESC;
+    """;
+
+    try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        // Set parameters for month and year
+        preparedStatement.setInt(1, year);
+        preparedStatement.setInt(2, month);
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+        // Populate table model with results
+        while (resultSet.next()) {
+            Object[] row = {
+                resultSet.getString("console_name"),
+                resultSet.getString("developer"),
+                resultSet.getInt("games_sold"),
+                resultSet.getDouble("games_sales")
+            };
+            tableModel.addRow(row);
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error retrieving data: " + e.getMessage());
+    }
+    return tableModel;
+}
+
 
     private void initializeReportsMenu() {
         reportsMenuPanel = new JPanel(new BorderLayout());
@@ -429,6 +474,41 @@ private DefaultTableModel fetchGamePerformance(int month, int year) {
         centerPanel.add(gamePerformanceButton, gbc);
 
         JButton consolePerformanceButton = new JButton("Generate Console Performance Report");
+        consolePerformanceButton.addActionListener(e -> {
+            try {
+                // Get selected month and year when button is clicked
+                int selectedMonth = monthComboBox.getSelectedIndex() + 1; // Convert to 1-based month
+                int selectedYear = Integer.parseInt(yearField.getText().trim()); // Parse year and trim input
+        
+                // Create a new branchReport panel and pass the selectedMonth and selectedYear
+                JPanel consoleReportPanel = new JPanel(new BorderLayout());
+        
+                // Table to display results
+                JTable resultsTable = new JTable();
+                JScrollPane scrollPane = new JScrollPane(resultsTable);
+        
+                // Add components to the panel
+                consoleReportPanel.add(new JLabel("Console Performance Report", SwingConstants.CENTER), BorderLayout.NORTH);
+                consoleReportPanel.add(scrollPane, BorderLayout.CENTER);
+        
+                // Fetch and display data
+                DefaultTableModel model = fetchConsolePerformance(selectedMonth, selectedYear);
+                resultsTable.setModel(model);
+        
+                // Back button to return to the Reports menu
+                JButton backButtonTransact = new JButton("Back to Transactions Menu");
+                backButtonTransact.addActionListener(ev -> showCard("ReportsMenu"));
+                consoleReportPanel.add(backButtonTransact, BorderLayout.SOUTH);
+        
+                // Show the report in the "BranchReport" card
+                cardsPanel.add(consoleReportPanel, "ConsoleReport");
+                showCard("ConsoleReport");
+        
+            } catch (NumberFormatException ex) {
+                // Handle invalid year input gracefully
+                JOptionPane.showMessageDialog(reportsMenuPanel, "Please enter a valid year.");
+            }
+        });
         gbc.gridy = 3;
         centerPanel.add(consolePerformanceButton, gbc);
 
