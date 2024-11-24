@@ -14,6 +14,7 @@ public class DatabaseView extends JFrame {
     private JPanel customerRecordsMenuPanel;  // <-- Added this panel for customer records
     private JPanel refundGamePanel;  // <-- Added this panel for refund game
     private JPanel purchaseTransactionPanel;  // <-- Added this panel for purchase transaction
+    private JPanel modifiedCustomerPanel;
 
     // main menu buttons
     private JButton recordsButton;
@@ -37,6 +38,7 @@ public class DatabaseView extends JFrame {
         initializeCustomerRecordsMenu();  // <-- Added this method to initialize the customer records menu
         initializeRefundGamePanel();  // <-- Added this method to initialize the refund game panel
         initializePurchaseTransactionPanel();  // <-- Initialize purchase transaction panel
+        initializeModifiedCustomerManagementPanel();
 
         cardsPanel.add(mainMenuPanel, "MainMenu");
         cardsPanel.add(recordsMenuPanel, "RecordsMenu");
@@ -45,6 +47,7 @@ public class DatabaseView extends JFrame {
         cardsPanel.add(customerRecordsMenuPanel, "CustomerRecordsMenu");  // <-- Added customer records menu
         cardsPanel.add(refundGamePanel, "RefundGamePanel");  // <-- Added refund game panel
         cardsPanel.add(purchaseTransactionPanel, "PurchaseTransactionPanel");  // <-- Add purchase transaction panel to card layout
+        cardsPanel.add(modifiedCustomerPanel, "CustomerTransaction");
 
         add(cardsPanel);
 
@@ -154,24 +157,48 @@ public class DatabaseView extends JFrame {
         backButton.addActionListener(e -> showCard("TransactionsMenu"));
         refundGamePanel.add(backButton, BorderLayout.SOUTH);
     }
+
+    private void initializeModifiedCustomerManagementPanel(){
+
+        modifiedCustomerPanel = new customerInformation();
+        JButton backButton = new JButton("Back to Transactions Menu");
+        backButton.addActionListener(e -> showCard("TransactionsMenu"));
+
+        modifiedCustomerPanel.add(backButton, BorderLayout.SOUTH);
+    }
     
     private void initializeTransactionsMenu() {
+        // Create the main panel with a BorderLayout
         transactionsMenuPanel = new JPanel(new BorderLayout());
+    
+        // Label at the center
         JLabel label = new JLabel("Transactions Menu", SwingConstants.CENTER);
-        JButton backButton = new JButton("Back to Main Menu");
-        transactionsMenuPanel.add(label, BorderLayout.CENTER);
-        transactionsMenuPanel.add(backButton, BorderLayout.SOUTH);
-
-        backButton.addActionListener(e -> showCard("MainMenu"));
-
+        transactionsMenuPanel.add(label, BorderLayout.NORTH);
+    
+        // Create a panel for buttons with FlowLayout
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    
         JButton refundGameButton = new JButton("Video Game Refund");
         refundGameButton.addActionListener(e -> showCard("RefundGamePanel"));
-        transactionsMenuPanel.add(refundGameButton, BorderLayout.NORTH);
-
+        buttonPanel.add(refundGameButton);
+    
+        JButton modifiedCustomerButton = new JButton("Customer Transaction");
+        modifiedCustomerButton.addActionListener(e -> showCard("CustomerTransaction"));
+        buttonPanel.add(modifiedCustomerButton);
+    
         JButton purchaseTransactionButton = new JButton("Purchase Transaction");
         purchaseTransactionButton.addActionListener(e -> showCard("PurchaseTransactionPanel"));
-        transactionsMenuPanel.add(purchaseTransactionButton, BorderLayout.CENTER);
+        buttonPanel.add(purchaseTransactionButton);
+
+        // Create buttons and add action listeners
+        JButton backButton = new JButton("Back to Main Menu");
+        backButton.addActionListener(e -> showCard("MainMenu"));
+        buttonPanel.add(backButton);
+    
+        // Add button panel to the main panel at the center
+        transactionsMenuPanel.add(buttonPanel, BorderLayout.CENTER);
     }
+    
 
     private void initializeReportsMenu() {
         reportsMenuPanel = new JPanel(new BorderLayout());
