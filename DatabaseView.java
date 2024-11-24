@@ -346,10 +346,10 @@ private DefaultTableModel fetchCustomerEngagement(int month, int year) {
 
 private DefaultTableModel fetchGamePerformance(int month, int year) {
     DefaultTableModel tableModel = new DefaultTableModel();
-    tableModel.addColumn("Game Title");
-    tableModel.addColumn("Console");
-    tableModel.addColumn("Total Copies Sold");
-    tableModel.addColumn("Total Revenue");
+    tableModel.addColumn("Game ID");
+    tableModel.addColumn("Game Name");
+    tableModel.addColumn("Copies Sold");
+    tableModel.addColumn("Total Sales");
 
     String query = """
         SELECT games.game_id, games.game_name, 
