@@ -57,9 +57,9 @@ public class RefundGamePanel extends JPanel {
         }
 
         // Database connection details
-        String url = "jdbc:mysql://localhost:3306/your_database";
+        String url = "jdbc:mysql://localhost:3306/attempt";
         String user = "root"; // Update with your database user
-        String password = "password"; // Update with your database password
+        String password = "root"; // Update with your database password
         
         // SQL queries
         String selectReceiptQuery = "SELECT * FROM receipts WHERE receipt_id = ? AND customer_id = ? AND product_id = ?";
