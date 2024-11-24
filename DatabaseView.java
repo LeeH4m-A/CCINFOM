@@ -231,7 +231,7 @@ public class DatabaseView extends JFrame {
         // Add button panel to the main panel at the center
         transactionsMenuPanel.add(buttonPanel, BorderLayout.CENTER);
     }
-
+	
     private DefaultTableModel fetchBranchSales(int month, int year) {
         DefaultTableModel tableModel = new DefaultTableModel();
         tableModel.addColumn("Branch ID");
@@ -282,7 +282,68 @@ public class DatabaseView extends JFrame {
 
     return tableModel;
 }
-    
+
+private DefaultTableModel fetchCustomerEngagement(int month, int year) {
+    DefaultTableModel tableModel = new DefaultTableModel();
+    tableModel.addColumn("Customer ID");
+    tableModel.addColumn("Last Name");
+    tableModel.addColumn("First Name");
+    tableModel.addColumn("Branch ID");
+    tableModel.addColumn("Total Purchases");
+    tableModel.addColumn("Number of Visits");
+
+    String query = """
+        SELECT DISTINCT customers.customer_id, customers.last_name, customers.first_name, branches.branch_id,
+            (SELECT ROUND(SUM(products.price), 2)
+             FROM receipts AS r
+             JOIN products AS p
+             ON r.product_id_purchased = p.product_id
+             WHERE r.branch_id = receipts.branch_id
+             GROUP BY branch_id
+            ) AS total_purchases,
+            COUNT(receipts.branch_id) AS num_visits
+        FROM customers
+        JOIN receipts 
+        ON customers.customer_id = receipts.customer_id
+        JOIN branches
+        ON receipts.branch_id = branches.branch_id
+        JOIN products
+        ON receipts.product_id_purchased = products.product_id
+        WHERE YEAR(receipts.date_of_purchase) = ?
+            AND MONTH(receipts.date_of_purchase) = ?
+        GROUP BY customers.customer_id, customers.last_name, customers.first_name, branches.branch_id
+        ORDER BY customers.customer_id ASC;
+    """;
+
+    try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+        // Set parameters
+        preparedStatement.setInt(1, year);
+        preparedStatement.setInt(2, month);
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        // Populate table model with results
+        while (resultSet.next()) {
+            Object[] row = {
+                resultSet.getInt("customer_id"),
+                resultSet.getString("last_name"),
+                resultSet.getString("first_name"),
+                resultSet.getInt("branch_id"),
+                resultSet.getDouble("total_purchases"),
+                resultSet.getInt("num_visits")
+            };
+            tableModel.addRow(row);
+        }
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error retrieving data: " + e.getMessage());
+    }
+
+    return tableModel;
+}
+	
     private void initializeReportsMenu() {
         reportsMenuPanel = new JPanel(new BorderLayout());
 
@@ -370,6 +431,48 @@ public class DatabaseView extends JFrame {
         JButton consumerEngagementButton = new JButton("Generate Consumer Engagement Report");
         gbc.gridy = 5;
         centerPanel.add(consumerEngagementButton, gbc);
+
+	JButton consumerEngagementButton = new JButton("Generate Consumer Engagement Report");
+	gbc.gridy = 5;
+	centerPanel.add(consumerEngagementButton, gbc);
+
+	// Add functionality to the consumerEngagementButton
+	consumerEngagementButton.addActionListener(e -> {
+  	  try {
+	        // Get selected month and year
+	        int selectedMonth = monthComboBox.getSelectedIndex() + 1; // Convert to 1-based month
+	        int selectedYear = Integer.parseInt(yearField.getText().trim()); // Parse year and trim input
+	
+	        // Create a new customerEngagementReport panel
+	        JPanel customerEngagementReportPanel = new JPanel(new BorderLayout());
+	
+	        // Table to display results
+	        JTable resultsTable = new JTable();
+	        JScrollPane scrollPane = new JScrollPane(resultsTable);
+	
+	        // Add components to the panel
+	        customerEngagementReportPanel.add(new JLabel("Customer Engagement Report", SwingConstants.CENTER), BorderLayout.NORTH);
+	        customerEngagementReportPanel.add(scrollPane, BorderLayout.CENTER);
+	
+	        // Fetch and display data
+	        DefaultTableModel model = fetchCustomerEngagement(selectedMonth, selectedYear);
+	        resultsTable.setModel(model);
+	
+	        // Back button to return to the Reports menu
+	        JButton backButton = new JButton("Back to Reports Menu");
+	        backButton.addActionListener(ev -> showCard("ReportsMenu"));
+	        customerEngagementReportPanel.add(backButton, BorderLayout.SOUTH);
+	
+	        // Show the report in the "CustomerEngagementReport" card
+	        cardsPanel.add(customerEngagementReportPanel, "CustomerEngagementReport");
+	        showCard("CustomerEngagementReport");
+	
+	    } catch (NumberFormatException ex) {
+	        // Handle invalid year input gracefully
+	        JOptionPane.showMessageDialog(reportsMenuPanel, "Please enter a valid year.");
+	    }
+	});
+	    
 
         reportsMenuPanel.add(centerPanel, BorderLayout.CENTER);
 
