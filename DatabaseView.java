@@ -13,6 +13,7 @@ public class DatabaseView extends JFrame {
     private JPanel reportsMenuPanel;
     private JPanel customerRecordsMenuPanel;  // <-- Added this panel for customer records
     private JPanel refundGamePanel;  // <-- Added this panel for refund game
+    private JPanel purchaseTransactionPanel;  // <-- Added this panel for purchase transaction
 
     // main menu buttons
     private JButton recordsButton;
@@ -35,7 +36,7 @@ public class DatabaseView extends JFrame {
         initializeReportsMenu();
         initializeCustomerRecordsMenu();  // <-- Added this method to initialize the customer records menu
         initializeRefundGamePanel();  // <-- Added this method to initialize the refund game panel
-
+        initializePurchaseTransactionPanel();  // <-- Initialize purchase transaction panel
 
         cardsPanel.add(mainMenuPanel, "MainMenu");
         cardsPanel.add(recordsMenuPanel, "RecordsMenu");
@@ -43,6 +44,7 @@ public class DatabaseView extends JFrame {
         cardsPanel.add(reportsMenuPanel, "ReportsMenu");
         cardsPanel.add(customerRecordsMenuPanel, "CustomerRecordsMenu");  // <-- Added customer records menu
         cardsPanel.add(refundGamePanel, "RefundGamePanel");  // <-- Added refund game panel
+        cardsPanel.add(purchaseTransactionPanel, "PurchaseTransactionPanel");  // <-- Add purchase transaction panel to card layout
 
         add(cardsPanel);
 
@@ -76,6 +78,15 @@ public class DatabaseView extends JFrame {
         mainMenuPanel.add(exitButton, gbc);
     }
 
+    private void initializePurchaseTransactionPanel() {
+        purchaseTransactionPanel = new PurchaseTransactionPanel();  // <-- Create the panel
+
+        // Add the back button to return to the Transactions menu
+        JButton backButton = new JButton("Back to Transactions Menu");
+        backButton.addActionListener(e -> showCard("TransactionsMenu"));
+        purchaseTransactionPanel.add(backButton, BorderLayout.SOUTH);
+    }
+    
     // records menu
     private void initializeRecordsMenu() {
         recordsMenuPanel = new JPanel(new BorderLayout());
@@ -156,6 +167,10 @@ public class DatabaseView extends JFrame {
         JButton refundGameButton = new JButton("Video Game Refund");
         refundGameButton.addActionListener(e -> showCard("RefundGamePanel"));
         transactionsMenuPanel.add(refundGameButton, BorderLayout.NORTH);
+
+        JButton purchaseTransactionButton = new JButton("Purchase Transaction");
+        purchaseTransactionButton.addActionListener(e -> showCard("PurchaseTransactionPanel"));
+        transactionsMenuPanel.add(purchaseTransactionButton, BorderLayout.CENTER);
     }
 
     private void initializeReportsMenu() {
