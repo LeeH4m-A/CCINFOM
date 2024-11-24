@@ -352,15 +352,18 @@ private DefaultTableModel fetchGamePerformance(int month, int year) {
     tableModel.addColumn("Total Revenue");
 
     String query = """
-        SELECT p.product_name AS game_title, 
-               p.console AS console,
-               SUM(r.quantity) AS total_copies_sold,
-               SUM(p.price * r.quantity) AS total_revenue
-        FROM receipts r
-        JOIN products p ON r.product_id_purchased = p.product_id
-        WHERE YEAR(r.date_of_purchase) = ? AND MONTH(r.date_of_purchase) = ?
-        GROUP BY p.product_name, p.console
-        ORDER BY total_revenue DESC;
+        SELECT games.game_id, games.game_name, 
+        COUNT(product_id_purchased) AS copies_sold,
+        ROUND(SUM(products.price), 2) AS total_sales
+        FROM games
+        JOIN products
+        ON games.game_id = products.game_id
+        LEFT JOIN receipts
+        ON products.product_id = receipts.product_id_purchased
+        WHERE YEAR(receipts.date_of_purchase) = ?
+        AND MONTH(receipts.date_of_purchase) = ?
+        GROUP BY game_id
+        ORDER BY total_sales DESC;
     """;
 
     try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
@@ -373,10 +376,10 @@ private DefaultTableModel fetchGamePerformance(int month, int year) {
         // Populate table model with results
         while (resultSet.next()) {
             Object[] row = {
-                resultSet.getString("game_title"),
-                resultSet.getString("console"),
-                resultSet.getInt("total_copies_sold"),
-                resultSet.getDouble("total_revenue")
+                resultSet.getString("game_id"),
+                resultSet.getString("game_name"),
+                resultSet.getInt("copies_sold"),
+                resultSet.getDouble("total_sales")
             };
             tableModel.addRow(row);
         }
