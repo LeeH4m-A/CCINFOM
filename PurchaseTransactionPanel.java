@@ -7,9 +7,9 @@ import java.time.LocalDate;
 
 public class PurchaseTransactionPanel extends JPanel {
     // Database connection details - Update these with your own
-    String url = "jdbc:mysql://localhost:3306/your_database";  // Database URL
+    String url = "jdbc:mysql://localhost:3306/attempt";  // Database URL
     String user = "root";  // Database username
-    String password = "password";  // Database password
+    String password = "root";  // Database password
 
     private JTextField customerIdField;
     private JTextField productIdField;
