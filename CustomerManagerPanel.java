@@ -34,9 +34,26 @@ public class CustomerManagerPanel extends JPanel {
 
     private void createRecord() {
         String customerId = JOptionPane.showInputDialog("Enter Customer ID:");
+        if (!isValidInteger(customerId)) {
+            JOptionPane.showMessageDialog(this, "Customer ID must be a number.");
+            return;
+        }
+
+        // Check if the customer ID already exists
+        if (isCustomerIdExists(Integer.parseInt(customerId))) {
+            JOptionPane.showMessageDialog(this, "Customer ID already exists. Please choose a different ID.");
+            return;
+        }
+
         String lastName = JOptionPane.showInputDialog("Enter Last Name:");
         String firstName = JOptionPane.showInputDialog("Enter First Name:");
+        
         String age = JOptionPane.showInputDialog("Enter Age:");
+        if (!isValidInteger(age)) {
+            JOptionPane.showMessageDialog(this, "Age must be a number.");
+            return;
+        }
+        
         String address = JOptionPane.showInputDialog("Enter Address:");
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database_name", "your_username", "your_password")) {
@@ -59,6 +76,10 @@ public class CustomerManagerPanel extends JPanel {
 
     private void viewRecord() {
         String customerId = JOptionPane.showInputDialog("Enter Customer ID to View:");
+        if (!isValidInteger(customerId)) {
+            JOptionPane.showMessageDialog(this, "Customer ID must be a number.");
+            return;
+        }
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database_name", "your_username", "your_password")) {
             String sql = "SELECT * FROM customers WHERE customer_id = ?";
@@ -86,10 +107,20 @@ public class CustomerManagerPanel extends JPanel {
 
     private void updateRecord() {
         String customerId = JOptionPane.showInputDialog("Enter Customer ID to Update:");
+        if (!isValidInteger(customerId)) {
+            JOptionPane.showMessageDialog(this, "Customer ID must be a number.");
+            return;
+        }
 
         String lastName = JOptionPane.showInputDialog("Enter New Last Name:");
         String firstName = JOptionPane.showInputDialog("Enter New First Name:");
+        
         String age = JOptionPane.showInputDialog("Enter New Age:");
+        if (!isValidInteger(age)) {
+            JOptionPane.showMessageDialog(this, "Age must be a number.");
+            return;
+        }
+        
         String address = JOptionPane.showInputDialog("Enter New Address:");
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database_name", "your_username", "your_password")) {
@@ -116,6 +147,10 @@ public class CustomerManagerPanel extends JPanel {
 
     private void deleteRecord() {
         String customerId = JOptionPane.showInputDialog("Enter Customer ID to Delete:");
+        if (!isValidInteger(customerId)) {
+            JOptionPane.showMessageDialog(this, "Customer ID must be a number.");
+            return;
+        }
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database_name", "your_username", "your_password")) {
             String sql = "DELETE FROM customers WHERE customer_id = ?";
@@ -133,5 +168,32 @@ public class CustomerManagerPanel extends JPanel {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error deleting record: " + e.getMessage());
         }
+    }
+
+    // Helper method to check if a string is a valid integer
+    private boolean isValidInteger(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    // Helper method to check if customer ID already exists in the database
+    private boolean isCustomerIdExists(int customerId) {
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database_name", "your_username", "your_password")) {
+            String sql = "SELECT COUNT(*) FROM customers WHERE customer_id = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setInt(1, customerId);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next() && rs.getInt(1) > 0) {
+                    return true; // Customer ID exists
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false; // Customer ID does not exist
     }
 }
