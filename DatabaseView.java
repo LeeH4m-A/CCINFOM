@@ -1,10 +1,20 @@
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class DatabaseView extends JFrame {
     private JPanel cardsPanel;
     private CardLayout cardLayout;
+
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/attempt";
+    private static final String DB_USER = "root";
+    private static final String DB_PASSWORD = "root";
 
     // menu panels
     private JPanel mainMenuPanel;
@@ -15,6 +25,7 @@ public class DatabaseView extends JFrame {
     private JPanel refundGamePanel;  // <-- Added this panel for refund game
     private JPanel purchaseTransactionPanel;  // <-- Added this panel for purchase transaction
     private JPanel modifiedCustomerPanel;
+    private JPanel branchReportPanel;
 
     // main menu buttons
     private JButton recordsButton;
@@ -220,6 +231,57 @@ public class DatabaseView extends JFrame {
         // Add button panel to the main panel at the center
         transactionsMenuPanel.add(buttonPanel, BorderLayout.CENTER);
     }
+
+    private DefaultTableModel fetchBranchSales(int month, int year) {
+        DefaultTableModel tableModel = new DefaultTableModel();
+        tableModel.addColumn("Branch ID");
+        tableModel.addColumn("Branch Name");
+        tableModel.addColumn("Location");
+        tableModel.addColumn("Sales");
+
+        String query = """
+            SELECT branches.branch_id, branches.branch_name, branches.location, 
+                CASE
+                    WHEN (ROUND(SUM(price), 2)) IS NULL THEN 0
+                    ELSE (ROUND(SUM(price), 2))
+                END AS branch_sales
+            FROM branches
+            LEFT JOIN receipts
+                ON branches.branch_id = receipts.branch_id
+            LEFT JOIN products
+                ON receipts.product_id_purchased = products.product_id
+            WHERE YEAR(receipts.date_of_purchase) = ?
+                AND MONTH(receipts.date_of_purchase) = ?
+            GROUP BY branches.branch_id
+            ORDER BY branch_sales DESC;
+        """;
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            // Set parameters
+            preparedStatement.setInt(1, year);
+            preparedStatement.setInt(2, month);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Populate table model with results
+            while (resultSet.next()) {
+                Object[] row = {
+                        resultSet.getInt("branch_id"),
+                        resultSet.getString("branch_name"),
+                        resultSet.getString("location"),
+                        resultSet.getDouble("branch_sales")
+                };
+                tableModel.addRow(row);
+        }
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error retrieving data: " + e.getMessage());
+    }
+
+    return tableModel;
+}
     
     private void initializeReportsMenu() {
         reportsMenuPanel = new JPanel(new BorderLayout());
@@ -267,6 +329,41 @@ public class DatabaseView extends JFrame {
         centerPanel.add(consolePerformanceButton, gbc);
 
         JButton branchPerformanceButton = new JButton("Generate Branch Performance Report");
+        branchPerformanceButton.addActionListener(e -> {
+            try {
+                // Get selected month and year when button is clicked
+                int selectedMonth = monthComboBox.getSelectedIndex() + 1; // Convert to 1-based month
+                int selectedYear = Integer.parseInt(yearField.getText().trim()); // Parse year and trim input
+        
+                // Create a new branchReport panel and pass the selectedMonth and selectedYear
+                branchReportPanel = new JPanel(new BorderLayout());
+        
+                // Table to display results
+                JTable resultsTable = new JTable();
+                JScrollPane scrollPane = new JScrollPane(resultsTable);
+        
+                // Add components to the panel
+                branchReportPanel.add(new JLabel("Branch Performance Report", SwingConstants.CENTER), BorderLayout.NORTH);
+                branchReportPanel.add(scrollPane, BorderLayout.CENTER);
+        
+                // Fetch and display data
+                DefaultTableModel model = fetchBranchSales(selectedMonth, selectedYear);
+                resultsTable.setModel(model);
+        
+                // Back button to return to the Reports menu
+                JButton backButtonTransact = new JButton("Back to Transactions Menu");
+                backButtonTransact.addActionListener(ev -> showCard("ReportsMenu"));
+                branchReportPanel.add(backButtonTransact, BorderLayout.SOUTH);
+        
+                // Show the report in the "BranchReport" card
+                cardsPanel.add(branchReportPanel, "BranchReport");
+                showCard("BranchReport");
+        
+            } catch (NumberFormatException ex) {
+                // Handle invalid year input gracefully
+                JOptionPane.showMessageDialog(reportsMenuPanel, "Please enter a valid year.");
+            }
+        });
         gbc.gridy = 4;
         centerPanel.add(branchPerformanceButton, gbc);
 
