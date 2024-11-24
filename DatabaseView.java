@@ -39,6 +39,7 @@ public class DatabaseView extends JFrame {
         initializeRefundGamePanel();  // <-- Added this method to initialize the refund game panel
         initializePurchaseTransactionPanel();  // <-- Initialize purchase transaction panel
         initializeModifiedCustomerManagementPanel();
+		initializeSupplierManagerPanel();
 
         cardsPanel.add(mainMenuPanel, "MainMenu");
         cardsPanel.add(recordsMenuPanel, "RecordsMenu");
@@ -132,6 +133,12 @@ public class DatabaseView extends JFrame {
         buttonPanel.add(branchControlButton);
     
         recordsMenuPanel.add(buttonPanel, BorderLayout.CENTER);
+
+		JButton supplierButton = new JButton("Manage Supplier Records");
+		supplierButton.addActionListener(e -> showCard("SupplierManagerPanel"));
+		buttonPanel.add(supplierButton);
+
+		recordsMenuPanel.add(buttonPanel, BorderLayout.CENTER);
     }
     
 
@@ -166,7 +173,22 @@ public class DatabaseView extends JFrame {
 
         modifiedCustomerPanel.add(backButton, BorderLayout.SOUTH);
     }
-    
+
+	private void initializeSupplierManagerPanel() {
+		JPanel supplierManagerPanel = new JPanel(new BorderLayout());
+	
+		// Assuming SupplierManagerPanel is a similar panel like CustomerManagerPanel
+		SupplierManagerPanel supplierPanel = new SupplierManagerPanel();
+		supplierManagerPanel.add(supplierPanel, BorderLayout.CENTER);
+	
+		// Back button to return to the Records Menu
+		JButton backButton = new JButton("Back to Records Menu");
+		backButton.addActionListener(e -> showCard("RecordsMenu"));
+		supplierManagerPanel.add(backButton, BorderLayout.SOUTH);
+	
+		cardsPanel.add(supplierManagerPanel, "SupplierManagerPanel");
+	}
+
     private void initializeTransactionsMenu() {
         // Create the main panel with a BorderLayout
         transactionsMenuPanel = new JPanel(new BorderLayout());
@@ -199,7 +221,6 @@ public class DatabaseView extends JFrame {
         transactionsMenuPanel.add(buttonPanel, BorderLayout.CENTER);
     }
     
-
     private void initializeReportsMenu() {
         reportsMenuPanel = new JPanel(new BorderLayout());
 
