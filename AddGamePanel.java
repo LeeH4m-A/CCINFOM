@@ -56,9 +56,9 @@ public class AddGamePanel extends JPanel {
             return;
         }
 
-        String url = "jdbc:mysql://localhost:3306/your_database";
+        String url = "jdbc:mysql://localhost:3306/attempt";
         String user = "root";
-        String password = "password";
+        String password = "root";
 
         String selectGameQuery = "SELECT * FROM supply WHERE product_id = ? AND branch_id = ?";
         String updateGameQuery = "UPDATE supply SET quantity = quantity + 1 WHERE product_id = ? AND branch_id = ?";
