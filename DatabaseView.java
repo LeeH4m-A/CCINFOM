@@ -343,7 +343,50 @@ private DefaultTableModel fetchCustomerEngagement(int month, int year) {
 
     return tableModel;
 }
-	
+
+private DefaultTableModel fetchGamePerformance(int month, int year) {
+    DefaultTableModel tableModel = new DefaultTableModel();
+    tableModel.addColumn("Game Title");
+    tableModel.addColumn("Console");
+    tableModel.addColumn("Total Copies Sold");
+    tableModel.addColumn("Total Revenue");
+
+    String query = """
+        SELECT p.product_name AS game_title, 
+               p.console AS console,
+               SUM(r.quantity) AS total_copies_sold,
+               SUM(p.price * r.quantity) AS total_revenue
+        FROM receipts r
+        JOIN products p ON r.product_id_purchased = p.product_id
+        WHERE YEAR(r.date_of_purchase) = ? AND MONTH(r.date_of_purchase) = ?
+        GROUP BY p.product_name, p.console
+        ORDER BY total_revenue DESC;
+    """;
+
+    try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        // Set parameters for month and year
+        preparedStatement.setInt(1, year);
+        preparedStatement.setInt(2, month);
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+        // Populate table model with results
+        while (resultSet.next()) {
+            Object[] row = {
+                resultSet.getString("game_title"),
+                resultSet.getString("console"),
+                resultSet.getInt("total_copies_sold"),
+                resultSet.getDouble("total_revenue")
+            };
+            tableModel.addRow(row);
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error retrieving data: " + e.getMessage());
+    }
+    return tableModel;
+}
+
+
     private void initializeReportsMenu() {
         reportsMenuPanel = new JPanel(new BorderLayout());
 
@@ -472,6 +515,42 @@ private DefaultTableModel fetchCustomerEngagement(int month, int year) {
 	        JOptionPane.showMessageDialog(reportsMenuPanel, "Please enter a valid year.");
 	    }
 	});
+
+		gamePerformanceButton.addActionListener(e -> {
+		try {
+			// Get selected month and year from the input fields
+			int selectedMonth = monthComboBox.getSelectedIndex() + 1; // Convert to 1-based month
+			int selectedYear = Integer.parseInt(yearField.getText().trim()); // Parse year and trim input
+	
+			// Create a new panel to display the Game Performance Report
+			JPanel gamePerformanceReportPanel = new JPanel(new BorderLayout());
+	
+			// Table to display results
+			JTable resultsTable = new JTable();
+			JScrollPane scrollPane = new JScrollPane(resultsTable);
+	
+			// Add components to the panel
+			gamePerformanceReportPanel.add(new JLabel("Game Performance Report", SwingConstants.CENTER), BorderLayout.NORTH);
+			gamePerformanceReportPanel.add(scrollPane, BorderLayout.CENTER);
+	
+			// Fetch and display the data in the table
+			DefaultTableModel model = fetchGamePerformance(selectedMonth, selectedYear);
+			resultsTable.setModel(model);
+	
+			// Back button to return to the Reports menu
+			JButton backButton = new JButton("Back to Reports Menu");
+			backButton.addActionListener(ev -> showCard("ReportsMenu")); // Navigate back to the reports menu
+			gamePerformanceReportPanel.add(backButton, BorderLayout.SOUTH);
+	
+			// Show the report in the "GamePerformanceReport" card
+			cardsPanel.add(gamePerformanceReportPanel, "GamePerformanceReport");
+			showCard("GamePerformanceReport");  // Navigate to the report view
+	
+		} catch (NumberFormatException ex) {
+			// Handle invalid year input gracefully
+			JOptionPane.showMessageDialog(reportsMenuPanel, "Please enter a valid year.");
+		}
+		});
 	    
 
         reportsMenuPanel.add(centerPanel, BorderLayout.CENTER);
