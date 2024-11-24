@@ -31,9 +31,9 @@ public class CustomerManagerPanel extends JPanel {
     }
 
     // Database connection details
-    private static final String URL = "jdbc:mysql://localhost:3306/your_database"; // Update with your database URL
+    private static final String URL = "jdbc:mysql://localhost:3306/attempt"; // Update with your database URL
     private static final String USER = "root"; // Update with your database user
-    private static final String PASSWORD = "password"; // Update with your database password
+    private static final String PASSWORD = "root"; // Update with your database password
 
     // CRUD Operations
 
