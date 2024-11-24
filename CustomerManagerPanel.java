@@ -30,6 +30,11 @@ public class CustomerManagerPanel extends JPanel {
         add(deleteButton);
     }
 
+    // Database connection details
+    private static final String URL = "jdbc:mysql://localhost:3306/your_database"; // Update with your database URL
+    private static final String USER = "root"; // Update with your database user
+    private static final String PASSWORD = "password"; // Update with your database password
+
     // CRUD Operations
 
     private void createRecord() {
@@ -56,7 +61,7 @@ public class CustomerManagerPanel extends JPanel {
         
         String address = JOptionPane.showInputDialog("Enter Address:");
 
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database_name", "your_username", "your_password")) {
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
             String sql = "INSERT INTO customers (customer_id, last_name, first_name, age, address) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, Integer.parseInt(customerId));
@@ -81,7 +86,7 @@ public class CustomerManagerPanel extends JPanel {
             return;
         }
 
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database_name", "your_username", "your_password")) {
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
             String sql = "SELECT * FROM customers WHERE customer_id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, Integer.parseInt(customerId));
@@ -123,7 +128,7 @@ public class CustomerManagerPanel extends JPanel {
         
         String address = JOptionPane.showInputDialog("Enter New Address:");
 
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database_name", "your_username", "your_password")) {
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
             String sql = "UPDATE customers SET last_name = ?, first_name = ?, age = ?, address = ? WHERE customer_id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, lastName);
@@ -152,7 +157,7 @@ public class CustomerManagerPanel extends JPanel {
             return;
         }
 
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database_name", "your_username", "your_password")) {
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
             String sql = "DELETE FROM customers WHERE customer_id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, Integer.parseInt(customerId));
@@ -182,7 +187,7 @@ public class CustomerManagerPanel extends JPanel {
 
     // Helper method to check if customer ID already exists in the database
     private boolean isCustomerIdExists(int customerId) {
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database_name", "your_username", "your_password")) {
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
             String sql = "SELECT COUNT(*) FROM customers WHERE customer_id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, customerId);
