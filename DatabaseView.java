@@ -26,6 +26,7 @@ public class DatabaseView extends JFrame {
     private JPanel purchaseTransactionPanel;  // <-- Added this panel for purchase transaction
     private JPanel modifiedCustomerPanel;
     private JPanel branchReportPanel;
+	private JPanel addGamePanel;
 
     // main menu buttons
     private JButton recordsButton;
@@ -53,6 +54,7 @@ public class DatabaseView extends JFrame {
 		initializeSupplierManagerPanel();
 		initializeProductManagerPanel();
 		initializeConsoleManagerPanel();
+		initializeAddGamePanel();
 
         cardsPanel.add(mainMenuPanel, "MainMenu");
         cardsPanel.add(recordsMenuPanel, "RecordsMenu");
@@ -62,6 +64,7 @@ public class DatabaseView extends JFrame {
         cardsPanel.add(refundGamePanel, "RefundGamePanel");  // <-- Added refund game panel
         cardsPanel.add(purchaseTransactionPanel, "PurchaseTransactionPanel");  // <-- Add purchase transaction panel to card layout
         cardsPanel.add(modifiedCustomerPanel, "CustomerTransaction");
+		cardsPanel.add(addGamePanel, "AddGamePanel");
 
         add(cardsPanel);
 
@@ -190,6 +193,14 @@ public class DatabaseView extends JFrame {
         refundGamePanel.add(backButton, BorderLayout.SOUTH);
     }
 
+	private void initializeAddGamePanel() {
+        addGamePanel = new AddGamePanel();
+
+        JButton backButton = new JButton("Back to Transactions Menu");
+        backButton.addActionListener(e -> showCard("TransactionsMenu"));
+        addGamePanel.add(backButton, BorderLayout.SOUTH);
+    }
+
     private void initializeModifiedCustomerManagementPanel(){
 
         modifiedCustomerPanel = new customerInformation();
@@ -254,6 +265,10 @@ public class DatabaseView extends JFrame {
         JButton refundGameButton = new JButton("Video Game Refund");
         refundGameButton.addActionListener(e -> showCard("RefundGamePanel"));
         buttonPanel.add(refundGameButton);
+
+		JButton addGameButton = new JButton("Add Game to Supply");
+        addGameButton.addActionListener(e -> showCard("AddGamePanel"));
+        buttonPanel.add(addGameButton);
     
         JButton modifiedCustomerButton = new JButton("Customer Transaction");
         modifiedCustomerButton.addActionListener(e -> showCard("CustomerTransaction"));
