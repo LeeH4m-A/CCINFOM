@@ -152,6 +152,18 @@ public class DatabaseView extends JFrame {
 		buttonPanel.add(supplierButton);
 
 		recordsMenuPanel.add(buttonPanel, BorderLayout.CENTER);
+
+		JButton consoleButton = new JButton("Manage Console Records");
+		consoleButton.addActionListener(e -> showCard("ConsoleManagerPanel"));
+		buttonPanel.add(consoleButton);
+
+		recordsMenuPanel.add(buttonPanel, BorderLayout.CENTER);
+
+		JButton productButton = new JButton("Manage Product Records");
+		productButton.addActionListener(e -> showCard("ProductManagerPanel"));
+		buttonPanel.add(productButton);
+
+		recordsMenuPanel.add(buttonPanel, BorderLayout.CENTER);
     }
     
 
@@ -225,7 +237,7 @@ public class DatabaseView extends JFrame {
 		backButton.addActionListener(e -> showCard("RecordsMenu"));
 		consoleManagerPanel.add(backButton, BorderLayout.SOUTH);
 	
-		cardsPanel.add(consoleManagerPanel, "ProductManagerPanel");
+		cardsPanel.add(consoleManagerPanel, "ConsoleManagerPanel");
 	}
 
     private void initializeTransactionsMenu() {
