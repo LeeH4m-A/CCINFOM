@@ -8,15 +8,15 @@ public class ProductManagerPanel extends JPanel {
     public ProductManagerPanel() {
         setLayout(new GridLayout(4, 1, 10, 10));
 
-        createButton = new JButton("Create Console");
-        viewButton = new JButton("View Console");
-        updateButton = new JButton("Update Console");
-        deleteButton = new JButton("Delete Console");
+        createButton = new JButton("Create Product");
+        viewButton = new JButton("View Product");
+        updateButton = new JButton("Update Product");
+        deleteButton = new JButton("Delete Product");
 
-        createButton.addActionListener(e -> createConsole());
-        viewButton.addActionListener(e -> viewConsole());
-        updateButton.addActionListener(e -> updateConsole());
-        deleteButton.addActionListener(e -> deleteConsole());
+        createButton.addActionListener(e -> createProduct());
+        viewButton.addActionListener(e -> viewProduct());
+        updateButton.addActionListener(e -> updateProduct());
+        deleteButton.addActionListener(e -> deleteProduct());
 
         add(createButton);
         add(viewButton);
@@ -28,104 +28,168 @@ public class ProductManagerPanel extends JPanel {
     private static final String USER = "root";
     private static final String PASSWORD = "root";
 
-    private void createConsole() {
-        String name = JOptionPane.showInputDialog("Enter Console Name:");
+    private void createProduct() {
+        String productId = JOptionPane.showInputDialog("Enter Product ID:");
+        String gameId = JOptionPane.showInputDialog("Enter Game ID:");
+        String console = JOptionPane.showInputDialog("Enter Console Name:");
         String price = JOptionPane.showInputDialog("Enter Price:");
-        String year = JOptionPane.showInputDialog("Enter Release Year:");
-        String developer = JOptionPane.showInputDialog("Enter Developer:");
-        String generation = JOptionPane.showInputDialog("Enter Generation:");
+
+        if (!isValidInteger(productId) || !isValidDouble(price)) {
+            JOptionPane.showMessageDialog(this, "Product ID must be a number, and Price must be a valid amount.");
+            return;
+        }
+
+        if (!isGameIdExists(gameId)) {
+            JOptionPane.showMessageDialog(this, "Game ID does not exist in the Games table. Please provide a valid Game ID.");
+            return;
+        }
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
-            String sql = "INSERT INTO consoles (console_name, price, release_year, developer, generation) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO products (product_id, game_id, console, price) VALUES (?, ?, ?, ?)";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setString(1, name);
-                stmt.setDouble(2, Double.parseDouble(price));
-                stmt.setInt(3, Integer.parseInt(year));
-                stmt.setString(4, developer);
-                stmt.setString(5, generation);
+                stmt.setInt(1, Integer.parseInt(productId));
+                stmt.setString(2, gameId);
+                stmt.setString(3, console);
+                stmt.setDouble(4, Double.parseDouble(price));
 
                 stmt.executeUpdate();
-                JOptionPane.showMessageDialog(this, "Console Created Successfully!");
+                JOptionPane.showMessageDialog(this, "Product Created Successfully!");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error creating console: " + e.getMessage());
+            if (e.getMessage().contains("Duplicate entry")) {
+                JOptionPane.showMessageDialog(this, "Product ID already exists. Please choose a different ID.");
+            } else {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error creating product: " + e.getMessage());
+            }
         }
     }
 
-    private void viewConsole() {
-        String name = JOptionPane.showInputDialog("Enter Console Name to View:");
+    private void viewProduct() {
+        String productId = JOptionPane.showInputDialog("Enter Product ID to View:");
+
+        if (!isValidInteger(productId)) {
+            JOptionPane.showMessageDialog(this, "Product ID must be a number.");
+            return;
+        }
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
-            String sql = "SELECT * FROM consoles WHERE console_name = ?";
+            String sql = "SELECT * FROM products WHERE product_id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setString(1, name);
+                stmt.setInt(1, Integer.parseInt(productId));
                 ResultSet rs = stmt.executeQuery();
 
                 if (rs.next()) {
-                    String data = "Console Name: " + rs.getString("console_name") + "\n" +
-                                  "Price: " + rs.getDouble("price") + "\n" +
-                                  "Release Year: " + rs.getInt("release_year") + "\n" +
-                                  "Developer: " + rs.getString("developer") + "\n" +
-                                  "Generation: " + rs.getString("generation");
+                    String data = "Product ID: " + rs.getInt("product_id") + "\n" +
+                                  "Game ID: " + rs.getString("game_id") + "\n" +
+                                  "Console: " + rs.getString("console") + "\n" +
+                                  "Price: " + rs.getDouble("price");
                     JOptionPane.showMessageDialog(this, data);
                 } else {
-                    JOptionPane.showMessageDialog(this, "No Console found with Name: " + name);
+                    JOptionPane.showMessageDialog(this, "No Product found with ID: " + productId);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error retrieving console: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error retrieving product: " + e.getMessage());
         }
     }
 
-    private void updateConsole() {
-        String name = JOptionPane.showInputDialog("Enter Console Name to Update:");
+    private void updateProduct() {
+        String productId = JOptionPane.showInputDialog("Enter Product ID to Update:");
+        String gameId = JOptionPane.showInputDialog("Enter New Game ID:");
+        String console = JOptionPane.showInputDialog("Enter New Console Name:");
         String price = JOptionPane.showInputDialog("Enter New Price:");
-        String year = JOptionPane.showInputDialog("Enter New Release Year:");
-        String developer = JOptionPane.showInputDialog("Enter New Developer:");
-        String generation = JOptionPane.showInputDialog("Enter New Generation:");
+
+        if (!isValidInteger(productId) || !isValidDouble(price)) {
+            JOptionPane.showMessageDialog(this, "Product ID must be a number, and Price must be a valid amount.");
+            return;
+        }
+
+        if (!isGameIdExists(gameId)) {
+            JOptionPane.showMessageDialog(this, "Game ID does not exist in the Games table. Please provide a valid Game ID.");
+            return;
+        }
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
-            String sql = "UPDATE consoles SET price = ?, release_year = ?, developer = ?, generation = ? WHERE console_name = ?";
+            String sql = "UPDATE products SET game_id = ?, console = ?, price = ? WHERE product_id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setDouble(1, Double.parseDouble(price));
-                stmt.setInt(2, Integer.parseInt(year));
-                stmt.setString(3, developer);
-                stmt.setString(4, generation);
-                stmt.setString(5, name);
+                stmt.setString(1, gameId);
+                stmt.setString(2, console);
+                stmt.setDouble(3, Double.parseDouble(price));
+                stmt.setInt(4, Integer.parseInt(productId));
 
                 int rowsUpdated = stmt.executeUpdate();
                 if (rowsUpdated > 0) {
-                    JOptionPane.showMessageDialog(this, "Console Updated Successfully!");
+                    JOptionPane.showMessageDialog(this, "Product Updated Successfully!");
                 } else {
-                    JOptionPane.showMessageDialog(this, "No Console found with Name: " + name);
+                    JOptionPane.showMessageDialog(this, "No Product found with ID: " + productId);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error updating console: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error updating product: " + e.getMessage());
         }
     }
 
-    private void deleteConsole() {
-        String name = JOptionPane.showInputDialog("Enter Console Name to Delete:");
+    private void deleteProduct() {
+        String productId = JOptionPane.showInputDialog("Enter Product ID to Delete:");
+
+        if (!isValidInteger(productId)) {
+            JOptionPane.showMessageDialog(this, "Product ID must be a number.");
+            return;
+        }
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
-            String sql = "DELETE FROM consoles WHERE console_name = ?";
+            String sql = "DELETE FROM products WHERE product_id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setString(1, name);
+                stmt.setInt(1, Integer.parseInt(productId));
 
                 int rowsDeleted = stmt.executeUpdate();
                 if (rowsDeleted > 0) {
-                    JOptionPane.showMessageDialog(this, "Console Deleted Successfully!");
+                    JOptionPane.showMessageDialog(this, "Product Deleted Successfully!");
                 } else {
-                    JOptionPane.showMessageDialog(this, "No Console found with Name: " + name);
+                    JOptionPane.showMessageDialog(this, "No Product found with ID: " + productId);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error deleting console: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error deleting product: " + e.getMessage());
+        }
+    }
+
+    private boolean isGameIdExists(String gameId) {
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            String sql = "SELECT COUNT(*) FROM games WHERE game_id = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, gameId);
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next() && rs.getInt(1) > 0) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private boolean isValidInteger(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private boolean isValidDouble(String input) {
+        try {
+            Double.parseDouble(input);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
     }
 }
