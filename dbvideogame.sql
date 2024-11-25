@@ -168,7 +168,7 @@ CREATE TABLE `receipts` (
   KEY `branch_id` (`branch_id`),
   CONSTRAINT `receipts_ibfk_1` FOREIGN KEY (`product_id_purchased`) REFERENCES `products` (`product_id`) ON DELETE SET NULL,
   CONSTRAINT `receipts_ibfk_2` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`branch_id`) ON DELETE SET NULL,
-  CONSTRAINT `suppliers_ibfk_3` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE CASCADE
+  CONSTRAINT `receipts_ibfk_3` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
