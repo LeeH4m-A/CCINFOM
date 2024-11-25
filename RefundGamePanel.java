@@ -62,7 +62,7 @@ public class RefundGamePanel extends JPanel {
         String password = "root"; // Update with your database password
         
         // SQL queries
-        String selectReceiptQuery = "SELECT * FROM receipts WHERE receipt_id = ? AND customer_id = ? AND product_id = ?";
+        String selectReceiptQuery = "SELECT * FROM receipts WHERE receipt_id = ? AND customer_id = ? AND product_id_purchased = ?";
         String deleteReceiptQuery = "DELETE FROM receipts WHERE receipt_id = ?";
         String updateSupplierQuery = "UPDATE suppliers SET quantity = quantity + 1 WHERE supplier_id = (SELECT branch_id FROM receipts WHERE receipt_id = ?) AND product_id = ?";
 
