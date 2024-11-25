@@ -36,8 +36,8 @@ public class customerInformation extends JPanel {
         JButton backButton = new JButton("Back");
 
         searchButton.addActionListener(e -> {
-            String firstName = firstNameField.getText().trim();
-            String lastName = lastNameField.getText().trim();
+            String firstName = firstNameField.getText().trim().toLowerCase();
+            String lastName = lastNameField.getText().trim().toLowerCase();
 
             if (firstName.isEmpty() || lastName.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please enter both first name and last name.", "Error", JOptionPane.ERROR_MESSAGE);
