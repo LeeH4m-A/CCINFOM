@@ -2,10 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
 
-public class ConsoleManagerPanel extends JPanel {
+public class ProductManagerPanel extends JPanel {
     private JButton createButton, viewButton, updateButton, deleteButton;
 
-    public ConsoleManagerPanel() {
+    public ProductManagerPanel() {
         setLayout(new GridLayout(4, 1, 10, 10));
 
         createButton = new JButton("Create Console");

@@ -51,6 +51,8 @@ public class DatabaseView extends JFrame {
         initializePurchaseTransactionPanel();  // <-- Initialize purchase transaction panel
         initializeModifiedCustomerManagementPanel();
 		initializeSupplierManagerPanel();
+		initializeProductManagerPanel();
+		initializeConsoleManagerPanel();
 
         cardsPanel.add(mainMenuPanel, "MainMenu");
         cardsPanel.add(recordsMenuPanel, "RecordsMenu");
@@ -198,6 +200,32 @@ public class DatabaseView extends JFrame {
 		supplierManagerPanel.add(backButton, BorderLayout.SOUTH);
 	
 		cardsPanel.add(supplierManagerPanel, "SupplierManagerPanel");
+	}
+
+	private void initializeProductManagerPanel() {
+		JPanel productManagerPanel = new JPanel(new BorderLayout());
+	
+		ProductManagerPanel productPanel = new ProductManagerPanel();
+		productManagerPanel.add(productPanel, BorderLayout.CENTER);
+	
+		JButton backButton = new JButton("Back to Records Menu");
+		backButton.addActionListener(e -> showCard("RecordsMenu"));
+		productManagerPanel.add(backButton, BorderLayout.SOUTH);
+	
+		cardsPanel.add(productManagerPanel, "ProductManagerPanel");
+	}
+
+	private void initializeConsoleManagerPanel() {
+		JPanel consoleManagerPanel = new JPanel(new BorderLayout());
+	
+		ConsoleManagerPanel consolePanel = new ConsoleManagerPanel();
+		consoleManagerPanel.add(consolePanel, BorderLayout.CENTER);
+	
+		JButton backButton = new JButton("Back to Records Menu");
+		backButton.addActionListener(e -> showCard("RecordsMenu"));
+		consoleManagerPanel.add(backButton, BorderLayout.SOUTH);
+	
+		cardsPanel.add(consoleManagerPanel, "ProductManagerPanel");
 	}
 
     private void initializeTransactionsMenu() {
